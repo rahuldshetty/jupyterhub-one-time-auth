@@ -69,23 +69,44 @@ class OneTimeAuthenticator(DummyAuthenticator):
         self.one_time_tokens[hashed_token] = user.name
         return token
 
-    def check_one_time_token(self, token):
+    def check_one_time_token(self, token, url):
         """Consume one-time token and return user if found
         Looks up hashed token in the one-time-tokens dict
         """
         htoken = self._hash_token(token)
         # consume one-time token, return user if found,
         # None otherwise
-        return self.one_time_tokens.pop(htoken, None)
+        username = self.one_time_tokens.pop(htoken, None)
+        return {
+            "name": username,
+            "auth_state": {
+                "url": url
+            }
+        }
+
+    def pre_spawn_start(self, user, spawner):
+        """Pass url to spawner via arguments variable"""
+        auth_state = yield user.get_auth_state()
+        if not auth_state:
+            # auth_state not enabled
+            return
+        # set default url
+        if "url" not in auth_state:
+            default_url = "tree"
+        else:
+            default_url = auth_state['url']
+        
+        spawner.default_url = default_url
 
     def authenticate(self, handler, data=None):
         """Authenticate is called by `.login_user`,
         This is called both for normal logins and for one-time login requests
         """
         token = handler.get_argument("onetimetoken", None)
+        url = handler.get_argument("url", "tree")
         if token:
             # called during the onetimetoken request
-            return self.check_one_time_token(token)
+            return self.check_one_time_token(token, url)
         else:
             # a normal login
             return super().authenticate(handler, data)
