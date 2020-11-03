@@ -103,7 +103,9 @@ class OneTimeAuthenticator(DummyAuthenticator):
         This is called both for normal logins and for one-time login requests
         """
         token = handler.get_argument("onetimetoken", None)
-        url = handler.get_argument("url", "tree")
+        url = handler.get_argument("url", None)
+        if url == None:
+            url = "tree"
         if token:
             # called during the onetimetoken request
             return self.check_one_time_token(token, url)
