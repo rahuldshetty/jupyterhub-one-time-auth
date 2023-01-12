@@ -43,4 +43,9 @@ setup(
     url='https://github.com/rahuldshetty/one_time_auth',
     version='0.1.0',
     zip_safe=False,
+    entry_points={
+        'jupyterhub.authenticators': [
+            'onetimeauth = one_time_auth:OneTimeAuthenticator'
+        ]
+    }
 )
