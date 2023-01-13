@@ -44,7 +44,7 @@ class UserTokenAuthenticator(Authenticator):
         token = handler.get_argument("onetimetoken", None)
         if token:
             # called during the onetimetoken request
-            return self.handler.hub_auth.user_from_token(token)
+            return handler.hub_auth.user_from_token(token)
             # return self.check_one_time_token(token)
         else:
             # a normal login
