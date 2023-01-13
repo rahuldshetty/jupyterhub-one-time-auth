@@ -11,7 +11,7 @@ from traitlets import Dict
 from jupyterhub.handlers.base import BaseHandler
 from jupyterhub.services.auth import HubAuthenticated
 
-from jupyterhub.auth import DummyAuthenticator
+from jupyterhub.auth import Authenticator
 from jupyterhub.utils import url_path_join, maybe_future
 
 class OneTimeTokenHandler(HubAuthenticated, BaseHandler):
@@ -51,7 +51,7 @@ class OneTimeTokenHandler(HubAuthenticated, BaseHandler):
         self.write(json.dumps({"token": token, "url": otp_url}))
 
 
-class OneTimeAuthenticator(DummyAuthenticator):
+class OneTimeAuthenticator(Authenticator):
 
     one_time_tokens = Dict()
 
