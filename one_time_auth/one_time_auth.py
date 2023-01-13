@@ -8,10 +8,14 @@ from tornado.httputil import url_concat
 from traitlets import Dict
 
 from jupyterhub.handlers.base import BaseHandler
+from jupyterhub.services.auth import HubOAuthenticated
+
 from jupyterhub.auth import DummyAuthenticator
 from jupyterhub.utils import url_path_join, maybe_future
 
-class OneTimeTokenHandler(BaseHandler):
+class OneTimeTokenHandler(HubOAuthenticated, BaseHandler):
+    hub_scopes = ["custom:onetimeauth:read"]
+    
     async def get(self):
         """GET /api/onetimetoken?onetimetoken=...
         logs in users with a one-time token.
