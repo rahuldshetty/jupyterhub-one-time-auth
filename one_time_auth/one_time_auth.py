@@ -2,22 +2,19 @@
 """Main module."""
 from hashlib import sha256
 import json
-import uuid
+import uuid, os
 
 from tornado import web
 from tornado.httputil import url_concat
 from traitlets import Dict
 
 from jupyterhub.handlers.base import BaseHandler
-from jupyterhub.services.auth import HubAuthenticated
+from jupyterhub.services.auth import HubAuthenticated, HubAuth
 
 from jupyterhub.auth import Authenticator
 from jupyterhub.utils import url_path_join, maybe_future
 
-class UserTokenHandler(HubAuthenticated, web.RequestHandler):
-   def initialize(self, hub_auth):
-        self.hub_auth = hub_auth
-                
+class UserTokenHandler(HubAuthenticated, web.RequestHandler):                
    async def get(self):
         """GET /api/onetimetoken?onetimetoken=...
         logs in users with a one-time token.
@@ -33,7 +30,7 @@ class UserTokenHandler(HubAuthenticated, web.RequestHandler):
             raise web.HTTPError(
                 403, "This one-time token is not valid. Maybe it has already been used?"
             )
-            
+
 class UserTokenAuthenticator(Authenticator):
 
     def get_handlers(self, app):
@@ -47,7 +44,8 @@ class UserTokenAuthenticator(Authenticator):
         token = handler.get_argument("onetimetoken", None)
         if token:
             # called during the onetimetoken request
-            return handler.hub_auth.user_from_token(token)
+            auth = HubAuth(api_token=os.environ['JUPYTERHUB_API_TOKEN'], cache_max_age=60)
+            return auth.user_from_token(token)
             # return self.check_one_time_token(token)
         else:
             # a normal login
