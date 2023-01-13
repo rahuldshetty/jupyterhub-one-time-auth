@@ -13,7 +13,7 @@ from jupyterhub.services.auth import HubAuthenticated
 from jupyterhub.auth import DummyAuthenticator
 from jupyterhub.utils import url_path_join, maybe_future
 
-class OneTimeTokenHandler(HubAuthenticated, BaseHandler):
+class OneTimeTokenHandler(HubAuthenticated, web.RequestHandler):
     
     async def get(self):
         """GET /api/onetimetoken?onetimetoken=...
@@ -41,6 +41,7 @@ class OneTimeTokenHandler(HubAuthenticated, BaseHandler):
         excluding the public host of jupyterhub,
         so the public host will need to be added for links.
         """
+        print("test123...")
         token = self.authenticator.issue_one_time_token(self.current_user)
         self.set_header("Content-Type", "application/json")
         otp_url = url_concat(
