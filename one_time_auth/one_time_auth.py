@@ -8,13 +8,12 @@ from tornado.httputil import url_concat
 from traitlets import Dict
 
 from jupyterhub.handlers.base import BaseHandler
-from jupyterhub.services.auth import HubOAuthenticated
+from jupyterhub.services.auth import HubAuthenticated
 
 from jupyterhub.auth import DummyAuthenticator
 from jupyterhub.utils import url_path_join, maybe_future
 
-class OneTimeTokenHandler(HubOAuthenticated, BaseHandler):
-    hub_scopes = ["custom:onetimeauth:read"]
+class OneTimeTokenHandler(HubAuthenticated, BaseHandler):
     
     async def get(self):
         """GET /api/onetimetoken?onetimetoken=...
