@@ -45,7 +45,7 @@ setup(
     zip_safe=False,
     entry_points={
         'jupyterhub.authenticators': [
-            'onetimeauth = one_time_auth:OneTimeAuthenticator'
+            'onetimeauth = one_time_auth:UserTokenAuthenticator'
         ]
     }
 )
