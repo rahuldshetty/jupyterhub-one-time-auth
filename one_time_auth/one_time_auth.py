@@ -41,7 +41,6 @@ class OneTimeTokenHandler(HubAuthenticated, web.RequestHandler):
         excluding the public host of jupyterhub,
         so the public host will need to be added for links.
         """
-        print("test123...")
         token = self.authenticator.issue_one_time_token(self.current_user)
         self.set_header("Content-Type", "application/json")
         otp_url = url_concat(
