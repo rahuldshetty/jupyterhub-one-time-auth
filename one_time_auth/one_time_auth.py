@@ -14,7 +14,10 @@ from jupyterhub.services.auth import HubAuthenticated
 from jupyterhub.auth import Authenticator
 from jupyterhub.utils import url_path_join, maybe_future
 
-class UserTokenHandler(HubAuthenticated, BaseHandler):
+class UserTokenHandler(HubAuthenticated, web.RequestHandler):
+   def initialize(self, hub_auth):
+        self.hub_auth = hub_auth
+                
    async def get(self):
         """GET /api/onetimetoken?onetimetoken=...
         logs in users with a one-time token.
