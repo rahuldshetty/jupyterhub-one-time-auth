@@ -1,3 +1,4 @@
+# Ref: https://gist.github.com/minrk/fd80a2a1fb226d1af9b9e77669815a59
 """Main module."""
 from hashlib import sha256
 import json
@@ -13,7 +14,7 @@ from jupyterhub.services.auth import HubAuthenticated
 from jupyterhub.auth import DummyAuthenticator
 from jupyterhub.utils import url_path_join, maybe_future
 
-class OneTimeTokenHandler(HubAuthenticated, web.RequestHandler):
+class OneTimeTokenHandler(HubAuthenticated, BaseHandler):
     
     async def get(self):
         """GET /api/onetimetoken?onetimetoken=...
@@ -72,7 +73,7 @@ class OneTimeAuthenticator(DummyAuthenticator):
         self.one_time_tokens[hashed_token] = user.name
         return token
 
-    def check_one_time_token(self, token, url):
+    def check_one_time_token(self, token):
         """Consume one-time token and return user if found
         Looks up hashed token in the one-time-tokens dict
         """
@@ -80,38 +81,16 @@ class OneTimeAuthenticator(DummyAuthenticator):
         # consume one-time token, return user if found,
         # None otherwise
         username = self.one_time_tokens.pop(htoken, None)
-        return {
-            "name": username,
-            "auth_state": {
-                "url": url
-            }
-        }
-
-    def pre_spawn_start(self, user, spawner):
-        """Pass url to spawner via arguments variable"""
-        auth_state = yield user.get_auth_state()
-        if not auth_state:
-            # auth_state not enabled
-            return
-        # set default url
-        if "url" not in auth_state:
-            default_url = "tree"
-        else:
-            default_url = auth_state['url']
-        
-        spawner.default_url = default_url
+        return username
 
     def authenticate(self, handler, data=None):
         """Authenticate is called by `.login_user`,
         This is called both for normal logins and for one-time login requests
         """
         token = handler.get_argument("onetimetoken", None)
-        url = handler.get_argument("url", None)
-        if url == None:
-            url = "tree"
         if token:
             # called during the onetimetoken request
-            return self.check_one_time_token(token, url)
+            return self.check_one_time_token(token)
         else:
             # a normal login
             return super().authenticate(handler, data)
