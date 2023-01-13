@@ -42,11 +42,11 @@ class UserTokenAuthenticator(Authenticator):
         This is called both for normal logins and for one-time login requests
         """
         token = handler.get_argument("onetimetoken", None)
-        if token:
+        if token and token.startswith("ott-"):
             # called during the onetimetoken request
-            auth = HubAuth(api_token=os.environ['JUPYTERHUB_API_TOKEN'], cache_max_age=60)
-            return auth.user_from_token(token)
-            # return self.check_one_time_token(token)
+            #auth = HubAuth(api_token=os.environ['JUPYTERHUB_API_TOKEN'], cache_max_age=60)
+            # return auth.user_from_token(token)
+            return token.split("-")[1]
         else:
             # a normal login
             return super().authenticate(handler, data)
