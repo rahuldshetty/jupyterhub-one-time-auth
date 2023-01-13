@@ -9,7 +9,7 @@ from tornado.httputil import url_concat
 from traitlets import Dict
 
 from jupyterhub.handlers.base import BaseHandler
-from jupyterhub.services.auth import HubAuthenticated,
+from jupyterhub.services.auth import HubAuthenticated
 
 from jupyterhub.auth import Authenticator
 from jupyterhub.utils import url_path_join, maybe_future
