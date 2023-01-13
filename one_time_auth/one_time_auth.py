@@ -14,7 +14,7 @@ from jupyterhub.services.auth import HubAuthenticated, HubAuth
 from jupyterhub.auth import Authenticator
 from jupyterhub.utils import url_path_join, maybe_future
 
-class UserTokenHandler(HubAuthenticated, web.RequestHandler):                
+class UserTokenHandler(HubAuthenticated, BaseHandler):
    async def get(self):
         """GET /api/onetimetoken?onetimetoken=...
         logs in users with a one-time token.
@@ -43,10 +43,10 @@ class UserTokenAuthenticator(Authenticator):
         """
         token = handler.get_argument("onetimetoken", None)
         if token and token.startswith("ott-"):
-            # called during the onetimetoken request
-            #auth = HubAuth(api_token=os.environ['JUPYTERHUB_API_TOKEN'], cache_max_age=60)
-            # return auth.user_from_token(token)
             return token.split("-")[1]
+        elif token:
+            auth = HubAuth(api_token=os.environ['JUPYTERHUB_API_TOKEN'], cache_max_age=60)
+            return auth.user_from_token(token)
         else:
             # a normal login
             return super().authenticate(handler, data)
